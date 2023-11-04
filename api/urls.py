@@ -1,3 +1,8 @@
-from django.urls import path, include
+from django.urls import include, path
 
-urlpatterns = []
+from .views import ProjectAPIView
+
+urlpatterns = [
+    path("auth/", include("rest_framework.urls")),
+    path("project/", ProjectAPIView.as_view()),
+]
