@@ -5,13 +5,24 @@ from .models import Project, Channel, Event
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ["id", "name", "created_at"]
+        fields = [
+            "id",
+            "name",
+            "created_at",
+            "user",
+        ]
 
 
 class ChannelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Channel
-        fields = ["id", "project_id", "name", "created_at"]
+        fields = [
+            "id",
+            "project_id",
+            "name",
+            "created_at",
+            "user",
+        ]
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -25,4 +36,5 @@ class EventSerializer(serializers.ModelSerializer):
             "description",
             "icon",
             "created_at",
+            "user",
         ]

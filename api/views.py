@@ -43,6 +43,9 @@ class ProjectAPIView(APIView):
         Returns:
             Response: http status code
         """
+        print(request.user)
+        print(request.user.id)
+
         data = {
             "name": request.data.get("name"),
             "user": request.user.id,
