@@ -1,14 +1,24 @@
+from django.http.request import HttpRequest
 from rest_framework import permissions, status
+from rest_framework.authentication import (
+    TokenAuthentication,
+    BasicAuthentication,
+    SessionAuthentication,
+)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django.http.request import HttpRequest
 from .models import Channel, Event, Project
 from .serializers import ChannelSerializer, EventSerializer, ProjectSerializer
 
 
 class ProjectAPIView(APIView):
     # check if user is auth
+    authentication_classes = [
+        SessionAuthentication,
+        BasicAuthentication,
+        TokenAuthentication,
+    ]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request: HttpRequest, *args, **kwargs) -> Response:
@@ -48,6 +58,11 @@ class ProjectAPIView(APIView):
 
 class ChannelAPIView(APIView):
     # check if user is auth
+    authentication_classes = [
+        SessionAuthentication,
+        BasicAuthentication,
+        TokenAuthentication,
+    ]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request: HttpRequest, *args, **kwargs) -> Response:
@@ -60,7 +75,7 @@ class ChannelAPIView(APIView):
             Response: user channels serialized in json
         """
         channels = Channel.objects.filter(user=request.user.id)
-        serializer = Channel(channels, many=True)
+        serializer = ChannelSerializer(channels, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> Response:
