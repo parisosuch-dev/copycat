@@ -1,9 +1,10 @@
+from django.contrib.auth.models import User
 from django.http.request import HttpRequest
 from rest_framework import permissions, status
 from rest_framework.authentication import (
-    TokenAuthentication,
     BasicAuthentication,
     SessionAuthentication,
+    TokenAuthentication,
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -43,8 +44,15 @@ class ProjectAPIView(APIView):
         Returns:
             Response: http status code
         """
-        print(request.user)
-        print(request.user.id)
+        # check if project name already exists for user
+        projects = Project.objects.filter(
+            user=request.user.id, name=request.data.get("name")
+        )
+        if len(projects) > 0:
+            return Response(
+                {"message": "Project name already exists for user."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         data = {
             "name": request.data.get("name"),
