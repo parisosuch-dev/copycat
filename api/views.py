@@ -98,6 +98,18 @@ class ChannelAPIView(APIView):
         Returns:
             Response: http status code
         """
+        # check if channel name already exists for user in project
+        channels = Channel.objects.filter(
+            user=request.user.id,
+            name=request.data.get("name"),
+            project_id=request.data.get("project_id"),
+        )
+        if len(channels) > 0:
+            return Response(
+                {"message": "Channel name already exists for project."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         data = {
             "project_id": request.data.get("project_id"),
             "name": request.data.get("name"),
