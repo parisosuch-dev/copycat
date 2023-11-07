@@ -43,6 +43,13 @@ class EventAPIView(APIView):
         Returns:
             Response: http status code
         """
+        # if any of the required field are empty
+        if (
+            request.data.get("project") is None
+            or request.data.get("channel") is None
+            or request.data.get("event") is None
+        ):
+            return Response({"message": "Required fields are empty."})
         # if the project does not exist for user, throw err
         projects = Project.objects.filter(
             user=request.user.id, name=request.data.get("project")
@@ -53,7 +60,8 @@ class EventAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         # get project id from projects query
-        project_id = projects[0]["id"]
+        project_id = projects.values("id")[0]["id"]
+
         # if the channel does not exist, create the channel
         channels = Channel.objects.filter(
             user=request.user.id, name=request.data.get("channel")
@@ -74,10 +82,10 @@ class EventAPIView(APIView):
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
             channel_serializer.save()
-            channel_id = channel_serializer.validated_data["id"]
-        else:
-            # get channel_id from channel
-            channel_id = channels[0]["id"]
+        channel_id = Channel.objects.filter(
+            user=request.user.id, name=request.data.get("channel")
+        ).values("id")[0]["id"]
+
         # post log to db
         data = {
             "project_id": project_id,
