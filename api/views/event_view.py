@@ -31,7 +31,7 @@ class EventAPIView(APIView):
             Response: user channels serialized in json
         """
         events = Event.objects.filter(user=request.user.id)
-        serializer = ChannelSerializer(events, many=True)
+        serializer = EventSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: Request, *args, **kwargs) -> Response:
