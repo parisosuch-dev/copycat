@@ -7,4 +7,5 @@ from .views.event_view import EventAPIView
 urlpatterns = [
     path("project/", ProjectAPIView.as_view()),
     path("channel/", ChannelAPIView.as_view()),
+    path("log/", EventAPIView.as_view()),
 ]
