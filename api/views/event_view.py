@@ -21,6 +21,19 @@ class EventAPIView(APIView):
     ]
     permission_classes = [permissions.IsAuthenticated]
 
+    def get(self, request: Request, *args, **kwargs) -> Response:
+        """Get all events for a user
+
+        Args:
+            request (HttpRequest): incoming http request
+
+        Returns:
+            Response: user channels serialized in json
+        """
+        events = Event.objects.filter(user=request.user.id)
+        serializer = ChannelSerializer(events, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def post(self, request: Request, *args, **kwargs) -> Response:
         """Post a log
 
