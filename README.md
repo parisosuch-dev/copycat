@@ -8,7 +8,7 @@ Your favorite logging api 😺
 
 - [x] make sure there are no repeats of project names per user
 - [x] make sure there are no repeats of channel names per project per user
-- [ ] create /log/ endpoint for log entries
+- [x] create /log/ endpoint for log entries
     - [x] if there is no channel when they send a POST, create that channel
     - [x] if there is no project when they send a POST, return err
 - [ ] create end points
