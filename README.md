@@ -14,4 +14,6 @@ Your favorite logging api 😺
 - [ ] create end points
     - [ ] GET log/project
     - [ ] GET log/project/channel
-    - [ ] GET log/project/channel/date (in isoformat) 
+    - [ ] GET log/project/channel/date (in isoformat)
+- [ ] change all HttpRequest objects to DRF Request objects. This is the correct type.
+- [ ] change all error responses to be "error" instead of "message" in the json.
