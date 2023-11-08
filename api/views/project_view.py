@@ -1,4 +1,4 @@
-from django.http.request import HttpRequest
+from rest_framework.request import Request
 from rest_framework import permissions, status
 from rest_framework.authentication import (
     BasicAuthentication,
@@ -21,11 +21,11 @@ class ProjectAPIView(APIView):
     ]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> Response:
+    def get(self, request: Request, *args, **kwargs) -> Response:
         """Get all projects for user
 
         Args:
-            request (HttpRequest): incoming http request
+            request (Request): incoming http request
 
         Returns:
             Response: user projects serialized in json
@@ -34,19 +34,17 @@ class ProjectAPIView(APIView):
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> Response:
+    def post(self, request: Request, *args, **kwargs) -> Response:
         """Post project for user
 
         Args:
-            request (HttpRequest): incoming http request
+            request (Request): incoming http request
 
         Returns:
             Response: http status code
         """
         # check if project name already exists for user
-        projects = Project.objects.filter(
-            user=request.user.id, name=request.data.get("name")
-        )
+        projects = Project.objects.filter(user=request.user.id, name=request.data.get("name"))
         if len(projects) > 0:
             return Response(
                 {"message": "Project name already exists for user."},

@@ -25,7 +25,7 @@ class EventAPIView(APIView):
         """Get all events for a user
 
         Args:
-            request (HttpRequest): incoming http request
+            request (Request): incoming http request
 
         Returns:
             Response: user channels serialized in json
@@ -38,7 +38,7 @@ class EventAPIView(APIView):
         """Post a log
 
         Args:
-            request (HttpRequest): incoming http request
+            request (Request): incoming http request
 
         Returns:
             Response: http status code
@@ -114,7 +114,7 @@ class ProjectEventsView(APIView):
         """Get all events for a project
 
         Args:
-            request (HttpRequest): incoming http request
+            request (Request): incoming http request
 
         Returns:
             Response: user channels serialized in json

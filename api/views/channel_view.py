@@ -1,4 +1,4 @@
-from django.http.request import HttpRequest
+from rest_framework.request import Request
 from rest_framework import permissions, status
 from rest_framework.authentication import (
     BasicAuthentication,
@@ -21,11 +21,11 @@ class ChannelAPIView(APIView):
     ]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> Response:
+    def get(self, request: Request, *args, **kwargs) -> Response:
         """Get all channels for a user
 
         Args:
-            request (HttpRequest): incoming http request
+            request (Request): incoming http request
 
         Returns:
             Response: user channels serialized in json
@@ -34,11 +34,11 @@ class ChannelAPIView(APIView):
         serializer = ChannelSerializer(channels, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> Response:
+    def post(self, request: Request, *args, **kwargs) -> Response:
         """Post channel for user
 
         Args:
-            request (HttpRequest): incoming http request
+            request (Request): incoming http request
 
         Returns:
             Response: http status code
