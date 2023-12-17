@@ -51,7 +51,9 @@ class EventAPIView(APIView):
         ):
             return Response({"message": "Required fields are empty."})
         # if the project does not exist for user, throw err
-        projects = Project.objects.filter(user=request.user.id, name=request.data.get("project"))
+        projects = Project.objects.filter(
+            user=request.user.id, name=request.data.get("project")
+        )
         if len(projects) == 0:
             return Response(
                 {"message": "Project does not exist for user."},
@@ -61,7 +63,9 @@ class EventAPIView(APIView):
         project_id = projects.values("id")[0]["id"]
 
         # if the channel does not exist, create the channel
-        channels = Channel.objects.filter(user=request.user.id, name=request.data.get("channel"))
+        channels = Channel.objects.filter(
+            user=request.user.id, name=request.data.get("channel")
+        )
         if len(channels) == 0:
             channel_data = {
                 "project_id": project_id,
@@ -78,9 +82,9 @@ class EventAPIView(APIView):
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
             channel_serializer.save()
-        channel_id = Channel.objects.filter(user=request.user.id, name=request.data.get("channel")).values("id")[0][
-            "id"
-        ]
+        channel_id = Channel.objects.filter(
+            user=request.user.id, name=request.data.get("channel")
+        ).values("id")[0]["id"]
 
         # post log to db
         data = {
@@ -126,7 +130,8 @@ class ProjectEventsView(APIView):
 
         if len(projects) == 0:
             return Response(
-                {"message": "Project name for user could not be found."}, status=status.HTTP_400_BAD_REQUEST
+                {"message": "Project name for user could not be found."},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         # use project id to get events for that project
         project_id = projects.values("id")[0]["id"]
@@ -135,3 +140,54 @@ class ProjectEventsView(APIView):
         serializer = EventSerializer(events, many=True)
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class ProjectChannelEventsView(APIView):
+    """Events for a project's channel"""
+
+    # check if user is auth
+    authentication_classes = [
+        SessionAuthentication,
+        BasicAuthentication,
+        TokenAuthentication,
+    ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request: Request, *args, **kwargs) -> Response:
+        """Get all events for a project's channel
+
+        Args:
+            request (Request): Incoming HTTP Request
+
+        Returns:
+            Response: List of all events in a given project channel
+        """
+        # using project name, query for project
+        project_name = self.kwargs.get("project")
+
+        projects = Project.objects.filter(user=request.user.id, name=project_name)
+
+        if len(projects) == 0:
+            return Response(
+                {"message": "Project name for user could not be found."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        # using the channel name, query for channel
+        channel_name = self.kwargs.get("channel")
+
+        channels = Channel.objects.filter(user=request.user.id, name=channel_name)
+        if len(channels) == 0:
+            return Response(
+                {"message": "Channel name for project could not be found."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        # use project id to get events for that project
+        project_id = projects.values("id")[0]["id"]
+        channel_id = channels.values("id")[0]["id"]
+
+        events = Event.objects.filter(
+            user=request.user.id, project_id=project_id, channel_id=channel_id
+        )
+        serializer = EventSerializer(events, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
