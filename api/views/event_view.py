@@ -1,15 +1,17 @@
-from rest_framework.request import Request
+from datetime import datetime
+
 from rest_framework import permissions, status
 from rest_framework.authentication import (
     BasicAuthentication,
     SessionAuthentication,
     TokenAuthentication,
 )
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..models import Channel, Event, Project
-from ..serializers import EventSerializer, ChannelSerializer
+from ..serializers import ChannelSerializer, EventSerializer
 
 
 class EventAPIView(APIView):
@@ -185,9 +187,41 @@ class ProjectChannelEventsView(APIView):
         project_id = projects.values("id")[0]["id"]
         channel_id = channels.values("id")[0]["id"]
 
-        events = Event.objects.filter(
-            user=request.user.id, project_id=project_id, channel_id=channel_id
-        )
+        # get the start and end date if it exists
+        start = request.query_params.get("start")
+        end = request.query_params.get("end")
+
+        # start and end = get between timeframe
+        if start and end:
+            events = Event.objects.filter(
+                user=request.user.id,
+                project_id=project_id,
+                channel_id=channel_id,
+                created_at__gte=start,
+                created_at__lte=end,
+            )
+        # start and no end = get beginning to now
+        elif start and not end:
+            events = Event.objects.filter(
+                user=request.user.id,
+                project_id=project_id,
+                channel_id=channel_id,
+                created_at__gte=start,
+                created_at__lte=datetime.now().isoformat(),
+            )
+        # no start and end = get everything up until end
+        elif not start and end:
+            events = Event.objects.filter(
+                user=request.user.id,
+                project_id=project_id,
+                channel_id=channel_id,
+                created_at__lte=end,
+            )
+        # no start and no end = get all
+        else:
+            events = Event.objects.filter(
+                user=request.user.id, project_id=project_id, channel_id=channel_id
+            )
         serializer = EventSerializer(events, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

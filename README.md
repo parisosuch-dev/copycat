@@ -11,9 +11,9 @@ Your favorite logging api 😺
 - [x] create /log/ endpoint for log entries
     - [x] if there is no channel when they send a POST, create that channel
     - [x] if there is no project when they send a POST, return err
-- [ ] create end points
+- [x] create end points
     - [x] GET log/project
-    - [ ] GET log/project/channel
-    - [ ] GET log/project/channel/date (in isoformat)
+    - [x] GET log/project/channel
+    - [x] GET log/project/channel/?start={date}&end={date}
 - [x] change all HttpRequest objects to DRF Request objects. This is the correct type.
 - [ ] change all error responses to be "error" instead of "message" in the json.
